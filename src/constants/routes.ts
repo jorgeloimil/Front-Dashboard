@@ -7,4 +7,5 @@ export const API_ROUTES = {
   },
   TIEMPO: '/tiempo',
   AGENDA: '/agenda',
+  FITCINA_HOY: '/fitcina/hoy',
 } as const;

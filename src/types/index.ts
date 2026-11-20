@@ -93,3 +93,25 @@ export interface Agenda {
   eventos: EventoAgenda[];
   calendarios: CalendarioAgenda[];
 }
+
+export type EstadoFitcina = 'OK' | 'DESACTUALIZADO' | 'NO_DISPONIBLE' | 'SIN_CONFIGURAR';
+export type EstadoRutinaHoy = 'PENDIENTE' | 'EN_CURSO' | 'HECHA';
+
+export interface RutinaHoy {
+  id: number;
+  nombre: string;
+  emoji: string | null;
+  intensidad: string | null; // BAJA | MEDIA | ALTA
+  ejercicios: number;
+  estado: EstadoRutinaHoy;
+}
+
+export interface FitcinaHoy {
+  estado: EstadoFitcina;
+  motivo: string | null; // por qué no hay datos frescos; nulo si estado es OK
+  fecha: string; // YYYY-MM-DD, el "hoy" de casa
+  actualizadoEn: string | null;
+  rutinas: RutinaHoy[];
+  rachaDias: number | null;
+  sesionesSemana: number | null;
+}

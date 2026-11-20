@@ -19,6 +19,8 @@ export interface Estado {
   compraCaida: boolean;
   /** Si es true, la agenda sale vacía y sin calendarios. */
   sinCalendarios: boolean;
+  /** Lo que devuelve /api/fitcina/hoy; null = el backend responde 500. */
+  fitcina: Record<string, unknown> | null;
   peticiones: string[];
 }
 
@@ -42,6 +44,20 @@ export const tiempo = {
   ],
 };
 
+/** Viernes: toca Empuje (ya hecha) y Core (pendiente). */
+export const fitcinaHoy = {
+  estado: 'OK',
+  motivo: null,
+  fecha: '2026-11-20',
+  actualizadoEn: '2026-11-20T12:00:00Z',
+  rutinas: [
+    { id: 1, nombre: 'Empuje', emoji: '💪', intensidad: 'ALTA', ejercicios: 5, estado: 'HECHA' },
+    { id: 3, nombre: 'Core', emoji: null, intensidad: null, ejercicios: 1, estado: 'PENDIENTE' },
+  ],
+  rachaDias: 3,
+  sesionesSemana: 2,
+};
+
 const agenda = (sinCalendarios: boolean) => ({
   desde: '2026-11-20',
   hasta: '2026-11-26',
@@ -60,12 +76,15 @@ const agenda = (sinCalendarios: boolean) => ({
  * del navegador en AHORA. Devuelve el estado para que cada test lo inspeccione o lo rompa.
  */
 export async function mockApi(page: Page, inicial: Partial<Estado> = {}): Promise<Estado> {
-  const estado: Estado = { articulos: [], compraCaida: false, sinCalendarios: false, peticiones: [], ...inicial };
+  const estado: Estado = { articulos: [], compraCaida: false, sinCalendarios: false, fitcina: fitcinaHoy, peticiones: [], ...inicial };
   let siguienteId = estado.articulos.reduce((max, a) => Math.max(max, a.id), 0) + 1;
 
   await page.clock.install({ time: AHORA });
 
   await page.route('**/api/tiempo', (route) => json(route, envoltorio(tiempo)));
+  await page.route('**/api/fitcina/hoy', (route) =>
+    estado.fitcina ? json(route, envoltorio(estado.fitcina)) : json(route, { title: 'Error interno', status: 500, detail: 'Ha ocurrido un error inesperado' }, 500),
+  );
   await page.route('**/api/agenda*', (route) => json(route, envoltorio(agenda(estado.sinCalendarios))));
 
   await page.route('**/api/compra/articulos**', async (route) => {

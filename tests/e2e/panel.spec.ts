@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { articulo, mockApi } from './support/mockApi';
+import { articulo, fitcinaHoy, mockApi } from './support/mockApi';
 
 test.describe('Cabecera', () => {
   test('muestra la hora y la fecha de casa', async ({ page }) => {
@@ -29,6 +29,61 @@ test.describe('Tiempo', () => {
     await page.goto('/');
     await expect(page.getByRole('region', { name: 'El tiempo' }).getByRole('alert')).toHaveText('Servicio no disponible');
     await expect(page.getByRole('region', { name: 'La compra' })).toBeVisible();
+  });
+});
+
+test.describe('Hoy toca (Fitcina)', () => {
+  test('muestra las rutinas de hoy con su estado y la racha', async ({ page }) => {
+    await mockApi(page);
+    await page.goto('/');
+    const tarjeta = page.getByRole('region', { name: 'Hoy toca…' });
+    const rutinas = tarjeta.getByRole('list', { name: 'Rutinas de hoy' }).getByRole('listitem');
+
+    await expect(rutinas).toHaveCount(2);
+    await expect(rutinas.nth(0)).toContainText('Empuje');
+    await expect(rutinas.nth(0)).toContainText('5 ejercicios · intensidad alta');
+    await expect(rutinas.nth(0)).toContainText('Hecha');
+    await expect(rutinas.nth(1)).toContainText('Core');
+    await expect(rutinas.nth(1)).toContainText('1 ejercicio');
+    await expect(rutinas.nth(1)).toContainText('Pendiente');
+    await expect(tarjeta).toContainText('Racha de 3 días · 2 sesiones esta semana');
+  });
+
+  test('en día de descanso lo dice', async ({ page }) => {
+    await mockApi(page, { fitcina: { ...fitcinaHoy, rutinas: [] } });
+    await page.goto('/');
+    await expect(page.getByTestId('fitcina-descanso')).toContainText('Hoy toca descansar');
+  });
+
+  test('con datos viejos los muestra y avisa de la hora', async ({ page }) => {
+    await mockApi(page, { fitcina: { ...fitcinaHoy, estado: 'DESACTUALIZADO', motivo: 'No se pudo consultar Fitcina' } });
+    await page.goto('/');
+    const tarjeta = page.getByRole('region', { name: 'Hoy toca…' });
+    await expect(tarjeta.getByRole('status')).toHaveText('Fitcina no responde; datos de las 13:00');
+    await expect(tarjeta).toContainText('Empuje');
+  });
+
+  test('si Fitcina no está disponible avisa sin romper el resto', async ({ page }) => {
+    await mockApi(page, {
+      fitcina: { ...fitcinaHoy, estado: 'NO_DISPONIBLE', motivo: 'No se pudo consultar Fitcina', rutinas: [], rachaDias: null, sesionesSemana: null },
+    });
+    await page.goto('/');
+    await expect(page.getByRole('region', { name: 'Hoy toca…' }).getByRole('alert')).toHaveText('Fitcina no responde: No se pudo consultar Fitcina');
+    await expect(page.getByRole('region', { name: 'La compra' })).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Agenda' })).toBeVisible();
+  });
+
+  test('sin configurar explica qué variables poner', async ({ page }) => {
+    await mockApi(page, { fitcina: { ...fitcinaHoy, estado: 'SIN_CONFIGURAR', rutinas: [], rachaDias: null, sesionesSemana: null } });
+    await page.goto('/');
+    await expect(page.getByRole('region', { name: 'Hoy toca…' })).toContainText('FITCINA_EMAIL');
+  });
+
+  test('si el backend falla, avisa en la tarjeta y el panel sigue', async ({ page }) => {
+    await mockApi(page, { fitcina: null });
+    await page.goto('/');
+    await expect(page.getByRole('region', { name: 'Hoy toca…' }).getByRole('alert')).toHaveText('Ha ocurrido un error inesperado');
+    await expect(page.getByRole('region', { name: 'El tiempo' })).toBeVisible();
   });
 });
 

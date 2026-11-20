@@ -1,4 +1,5 @@
 import AgendaPanel from "./AgendaPanel";
+import FitcinaPanel from "./FitcinaPanel";
 import Reloj from "./Reloj";
 import ShoppingPanel from "./ShoppingPanel";
 import WeatherPanel from "./WeatherPanel";
@@ -15,8 +16,9 @@ export default function Dashboard() {
       <Reloj />
       <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-12 lg:grid-rows-1">
         <ShoppingPanel className="lg:col-span-5" />
-        <div className="grid min-h-0 gap-4 lg:col-span-7 lg:grid-rows-[auto_minmax(0,1fr)]">
+        <div className="grid min-h-0 gap-4 lg:col-span-7 lg:grid-rows-[auto_auto_minmax(0,1fr)]">
           <WeatherPanel />
+          <FitcinaPanel />
           <AgendaPanel />
         </div>
       </div>

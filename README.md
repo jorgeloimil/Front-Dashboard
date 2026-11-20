@@ -1,6 +1,6 @@
 # Front-Dashboard
 
-Panel de casa para la tablet colgada junto al escritorio: **lista de la compra compartida**, **tiempo** y **agenda familiar** en una sola pantalla. El backend vive en [Backend-Dashboard](https://github.com/jorgeloimil/Backend-Dashboard).
+Panel de casa para la tablet colgada junto al escritorio: **lista de la compra compartida**, **tiempo**, **agenda familiar** y **qué toca entrenar hoy en Fitcina** en una sola pantalla. El backend vive en [Backend-Dashboard](https://github.com/jorgeloimil/Backend-Dashboard).
 
 Mismo stack que Fitcina: Astro + React (islas) + TypeScript + Tailwind, con su paleta tinta/crema/tomate y sombras duras. Aquí en modo oscuro fijo (una pantalla encendida todo el día no debe deslumbrar).
 
@@ -32,6 +32,7 @@ GitHub Actions (`.github/workflows/ci.yml`) pasa `check`, los tests E2E y el bui
 - **La compra**: añadir con cantidad, tocar para marcar comprado, ✕ para quitar, «Limpiar» para vaciar los comprados. Se agrupa por pasillo y se refresca cada 30 s con lo que apunten otros desde el móvil.
 - **El tiempo**: ahora, próximas 6 horas y 5 días (Open-Meteo, vía el backend).
 - **Agenda**: próximos 7 días agrupados por día, con eventos de todo el día, de varios días y ubicación. Si un calendario falla, avisa y sigue mostrando los demás.
+- **Hoy toca… (Fitcina)**: las rutinas de hoy según sus días de la semana, con su estado (pendiente, en curso, hecha), la racha y las sesiones de la semana. Si Fitcina no responde, la tarjeta muestra los últimos datos con un aviso o el motivo, y el resto del panel sigue igual. Las credenciales de Fitcina van en el backend (ver su README), no aquí.
 - Al despertar la tablet (la pestaña vuelve a ser visible) todo se refresca al instante.
 
 ## Arquitectura
@@ -50,8 +51,8 @@ Astro (index.astro)  →  Dashboard (isla React)  →  Hooks  →  Services (fet
 src/
 ├── pages/index.astro       # La única página
 ├── layouts/BaseLayout.astro
-├── components/             # Dashboard, ShoppingPanel, WeatherPanel, AgendaPanel, Reloj y ui/
-├── hooks/                  # useCompra, useTiempo, useAgenda, useFetch, usePolling, useClock
+├── components/             # Dashboard, ShoppingPanel, WeatherPanel, AgendaPanel, FitcinaPanel, Reloj y ui/
+├── hooks/                  # useCompra, useTiempo, useAgenda, useFitcina, useFetch, usePolling, useClock
 ├── services/               # api.client y un servicio por recurso
 ├── constants/              # Rutas de la API y pasillos
 ├── types/                  # Contrato con el backend
