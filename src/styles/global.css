@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    color-scheme: dark;
+  }
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background-color: #161112; /* tinta */
+    color: #fff6e5; /* crema-50 */
+    /* Papel de estraza punteado, como Fitcina, en versión oscura para la tablet colgada */
+    background-image: radial-gradient(rgb(255 246 229 / 0.06) 1px, transparent 1.2px);
+    background-size: 18px 18px;
+    -webkit-font-smoothing: antialiased;
+    /* Sin flash al tocar; el feedback lo dan los estados active: */
+    -webkit-tap-highlight-color: transparent;
+    /* Un panel fijo: sin rebote ni selección accidental al tocar */
+    overscroll-behavior: none;
+  }
+  h1,
+  h2,
+  .font-display {
+    font-family: 'Archivo Black', 'Space Grotesk', sans-serif;
+    font-weight: 400 !important;
+    letter-spacing: -0.025em;
+  }
+  ::selection {
+    background-color: #ff5a36;
+    color: #161112;
+  }
+  button:focus-visible,
+  input:focus-visible {
+    outline: 3px solid #ff5a36;
+    outline-offset: 2px;
+  }
+  button,
+  [role='button'],
+  input {
+    touch-action: manipulation;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
