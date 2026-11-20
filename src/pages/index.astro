@@ -1,0 +1,8 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Dashboard from "../components/Dashboard.tsx";
+---
+<BaseLayout>
+  <!-- client:only: "hoy" y la hora son los de la tablet, no los del build -->
+  <Dashboard client:only="react" />
+</BaseLayout>
